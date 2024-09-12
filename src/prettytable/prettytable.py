@@ -496,7 +496,7 @@ class PrettyTable:
             return
         try:
             assert isinstance(val, str)
-            assert val.isdigit()
+            assert val.isdigit() or val[0] == "+" and val[1:].isdigit()
         except AssertionError:
             msg = f"Invalid value for {name}. Must be an integer format string."
             raise ValueError(msg)
@@ -509,7 +509,7 @@ class PrettyTable:
             assert "." in val
             bits = val.split(".")
             assert len(bits) <= 2
-            assert bits[0] == "" or bits[0].isdigit()
+            assert bits[0] == "" or bits[0].isdigit() or bits[0][0] == "+" and bits[0][1:].isdigit()
             assert (
                 bits[1] == ""
                 or bits[1].isdigit()
