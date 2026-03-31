@@ -1,37 +1,21 @@
 from __future__ import annotations
 
 import pytest
+from test_prettytable import CITY_DATA, CITY_DATA_HEADER
 
-from prettytable import PrettyTable
 from prettytable.colortable import RESET_CODE, ColorTable, Theme, Themes
 
-
-@pytest.fixture
-def row_prettytable() -> PrettyTable:
-    # Row by row...
-    table = PrettyTable()
-    table.field_names = ["City name", "Area", "Population", "Annual Rainfall"]
-    table.add_row(["Adelaide", 1295, 1158259, 600.5])
-    table.add_row(["Brisbane", 5905, 1857594, 1146.4])
-    table.add_row(["Darwin", 112, 120900, 1714.7])
-    table.add_row(["Hobart", 1357, 205556, 619.5])
-    table.add_row(["Sydney", 2058, 4336374, 1214.8])
-    table.add_row(["Melbourne", 1566, 3806092, 646.9])
-    table.add_row(["Perth", 5386, 1554769, 869.4])
-    return table
+TYPE_CHECKING = False
+if TYPE_CHECKING:
+    from prettytable import PrettyTable
 
 
 @pytest.fixture
-def row_colortable():
+def row_colortable() -> PrettyTable:
     table = ColorTable()
-    table.field_names = ["City name", "Area", "Population", "Annual Rainfall"]
-    table.add_row(["Adelaide", 1295, 1158259, 600.5])
-    table.add_row(["Brisbane", 5905, 1857594, 1146.4])
-    table.add_row(["Darwin", 112, 120900, 1714.7])
-    table.add_row(["Hobart", 1357, 205556, 619.5])
-    table.add_row(["Sydney", 2058, 4336374, 1214.8])
-    table.add_row(["Melbourne", 1566, 3806092, 646.9])
-    table.add_row(["Perth", 5386, 1554769, 869.4])
+    table.field_names = CITY_DATA_HEADER
+    for row in CITY_DATA:
+        table.add_row(row)
     return table
 
 
@@ -68,8 +52,9 @@ class TestColorTable:
         dict2 = table2.__dict__
 
         # So we don't compare functions
-        del dict1["_sort_key"]
-        del dict2["_sort_key"]
+        for func in ("_sort_key", "_row_filter"):
+            del dict1[func]
+            del dict2[func]
 
         assert dict1 == dict2
 
@@ -105,7 +90,16 @@ class TestColorTableRendering:
         Tests the color table rendering using the default alignment (`'c'`)
     """
 
-    def test_color_table_rendering(self) -> None:
+    @pytest.mark.parametrize(
+        ["with_title", "with_header"],
+        [
+            (False, True),  # the default
+            (True, True),  # titled
+            (True, False),  # titled, no header
+            (True, True),  # both title and header
+        ],
+    )
+    def test_color_table_rendering(self, with_title: bool, with_header: bool) -> None:
         """Tests the color table rendering using the default alignment (`'c'`)"""
         chars = {
             "+": "\x1b[36m+\x1b[0m\x1b[96m",
@@ -118,6 +112,10 @@ class TestColorTableRendering:
         minus = chars.get("-")
         pipe = chars.get("|")
         space = chars.get(" ")
+        assert isinstance(plus, str)
+        assert isinstance(minus, str)
+        assert isinstance(pipe, str)
+        assert isinstance(space, str)
 
         # +-----------------------+
         # |        Efforts        |
@@ -140,18 +138,40 @@ class TestColorTableRendering:
             (plus + minus * 3) * 6 + plus,
         )
 
-        header_str = str("\n".join(header))
-        body_str = str("\n".join(body))
+        if with_title:
+            header_str = str("\n".join(header))
+        else:
+            header_str = str(header[2])
+        if with_header:
+            body_str = str("\n".join(body))
+        else:
+            body_str = str("\n".join(body[2:]))
 
         table = ColorTable(
             ("A", "B", "C", "D", "E", "F"),
             theme=Themes.OCEAN,
         )
 
-        table.title = "Efforts"
+        if with_title:
+            table.title = "Efforts"
+        table.header = with_header
         table.add_row([1, 2, 3, 4, 5, 6])
 
-        expected = header_str + "\n" + body_str + "\x1b[0m"
+        expected = f"{header_str}\n{body_str}\x1b[0m"
         result = str(table)
 
         assert expected == result
+
+    def test_all_themes(self) -> None:
+        """Tests rendering with all available themes"""
+        table = ColorTable(
+            ("A", "B", "C", "D", "E", "F"),
+        )
+        table.title = "Theme Test"
+        table.add_row([1, 2, 3, 4, 5, 6])
+
+        for theme in vars(Themes).values():
+            if isinstance(theme, Theme):
+                table.theme = theme
+                result = str(table)
+                assert result  # Simple check to ensure rendering doesn't fail
