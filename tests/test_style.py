@@ -24,9 +24,7 @@ class TestPositionalJunctions:
     def test_default(self, city_data: PrettyTable) -> None:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
 
-        assert (
-            city_data.get_string().strip()
-            == """
+        assert city_data.get_string().strip() == """
 ╔═══════════╦══════╦════════════╦═════════════════╗
 ║ City name ║ Area ║ Population ║ Annual Rainfall ║
 ╠═══════════╬══════╬════════════╬═════════════════╣
@@ -38,15 +36,12 @@ class TestPositionalJunctions:
 ║ Melbourne ║ 1566 ║  3806092   ║      646.9      ║
 ║   Perth   ║ 5386 ║  1554769   ║      869.4      ║
 ╚═══════════╩══════╩════════════╩═════════════════╝""".strip()
-        )
 
     def test_no_header(self, city_data: PrettyTable) -> None:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
         city_data.header = False
 
-        assert (
-            city_data.get_string().strip()
-            == """
+        assert city_data.get_string().strip() == """
 ╔═══════════╦══════╦═════════╦════════╗
 ║  Adelaide ║ 1295 ║ 1158259 ║ 600.5  ║
 ║  Brisbane ║ 5905 ║ 1857594 ║ 1146.4 ║
@@ -56,15 +51,12 @@ class TestPositionalJunctions:
 ║ Melbourne ║ 1566 ║ 3806092 ║ 646.9  ║
 ║   Perth   ║ 5386 ║ 1554769 ║ 869.4  ║
 ╚═══════════╩══════╩═════════╩════════╝""".strip()
-        )
 
     def test_with_title(self, city_data: PrettyTable) -> None:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
         city_data.title = "Title"
 
-        assert (
-            city_data.get_string().strip()
-            == """
+        assert city_data.get_string().strip() == """
 ╔═════════════════════════════════════════════════╗
 ║                      Title                      ║
 ╠═══════════╦══════╦════════════╦═════════════════╣
@@ -78,15 +70,12 @@ class TestPositionalJunctions:
 ║ Melbourne ║ 1566 ║  3806092   ║      646.9      ║
 ║   Perth   ║ 5386 ║  1554769   ║      869.4      ║
 ╚═══════════╩══════╩════════════╩═════════════════╝""".strip()
-        )
 
     def test_with_title_no_header(self, city_data: PrettyTable) -> None:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
         city_data.title = "Title"
         city_data.header = False
-        assert (
-            city_data.get_string().strip()
-            == """
+        assert city_data.get_string().strip() == """
 ╔═════════════════════════════════════╗
 ║                Title                ║
 ╠═══════════╦══════╦═════════╦════════╣
@@ -98,15 +87,12 @@ class TestPositionalJunctions:
 ║ Melbourne ║ 1566 ║ 3806092 ║ 646.9  ║
 ║   Perth   ║ 5386 ║ 1554769 ║ 869.4  ║
 ╚═══════════╩══════╩═════════╩════════╝""".strip()
-        )
 
     def test_hrule_all(self, city_data: PrettyTable) -> None:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
         city_data.title = "Title"
         city_data.hrules = HRuleStyle.ALL
-        assert (
-            city_data.get_string().strip()
-            == """
+        assert city_data.get_string().strip() == """
 ╔═════════════════════════════════════════════════╗
 ║                      Title                      ║
 ╠═══════════╦══════╦════════════╦═════════════════╣
@@ -126,7 +112,6 @@ class TestPositionalJunctions:
 ╠═══════════╬══════╬════════════╬═════════════════╣
 ║   Perth   ║ 5386 ║  1554769   ║      869.4      ║
 ╚═══════════╩══════╩════════════╩═════════════════╝""".strip()
-        )
 
     def test_vrules_none(self, city_data: PrettyTable) -> None:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
@@ -150,9 +135,7 @@ class TestPositionalJunctions:
         city_data.set_style(TableStyle.DOUBLE_BORDER)
         city_data.vrules = VRuleStyle.FRAME
         city_data.title = "Title"
-        assert (
-            city_data.get_string().strip()
-            == """
+        assert city_data.get_string().strip() == """
 ╔═════════════════════════════════════════════════╗
 ║                      Title                      ║
 ╠═════════════════════════════════════════════════╣
@@ -166,7 +149,6 @@ class TestPositionalJunctions:
 ║ Melbourne   1566    3806092          646.9      ║
 ║   Perth     5386    1554769          869.4      ║
 ╚═════════════════════════════════════════════════╝""".strip()
-        )
 
 
 class TestStyle:
@@ -279,6 +261,23 @@ Table Caption
 │ 7 │ value 7 │  value8 │  value9 │
 └───┴─────────┴─────────┴─────────┘
 """,
+            ),
+            pytest.param(
+                TableStyle.RST,
+                """
++---------------------------------+
+|          Table Caption          |
++---+---------+---------+---------+
+|   | Field 1 | Field 2 | Field 3 |
++===+=========+=========+=========+
+| 1 | value 1 |  value2 |  value3 |
++---+---------+---------+---------+
+| 4 | value 4 |  value5 |  value6 |
++---+---------+---------+---------+
+| 7 | value 7 |  value8 |  value9 |
++---+---------+---------+---------+
+""",
+                id="RST",
             ),
         ],
     )
@@ -400,6 +399,22 @@ Table Caption
 """,
                 id="SINGLE_BORDER",
             ),
+            pytest.param(
+                TableStyle.MARKDOWN,
+                TableStyle.RST,
+                """
++---+---------+---------+---------+
+|   | Field 1 | Field 2 | Field 3 |
++===+=========+=========+=========+
+| 1 | value 1 |  value2 |  value3 |
++---+---------+---------+---------+
+| 4 | value 4 |  value5 |  value6 |
++---+---------+---------+---------+
+| 7 | value 7 |  value8 |  value9 |
++---+---------+---------+---------+
+""",
+                id="RST",
+            ),
         ],
     )
     def test_style_reset(
@@ -478,16 +493,20 @@ def emoji_pretty_table() -> PrettyTable:
         '\033[38;5;226m _`/""\033[38;5;250m.-.    \033[0m',
         "\033[38;5;226m  ,\\_\033[38;5;250m(   ).  \033[0m",
         "\033[38;5;226m   /\033[38;5;250m(___(__) \033[0m",
-        "\033[38;5;228;5m    ⚡\033[38;5;111;25mʻ ʻ\033[38;5;228;5m"
-        "⚡\033[38;5;111;25mʻ ʻ \033[0m",
+        (
+            "\033[38;5;228;5m    ⚡\033[38;5;111;25mʻ ʻ\033[38;5;228;5m"
+            "⚡\033[38;5;111;25mʻ ʻ \033[0m"
+        ),
         "\033[38;5;111m    ʻ ʻ ʻ ʻ  \033[0m",
     ]
     thunder2 = [
         "\033[38;5;240;1m     .-.     \033[0m",
         "\033[38;5;240;1m    (   ).   \033[0m",
         "\033[38;5;240;1m   (___(__)  \033[0m",
-        "\033[38;5;21;1m  ‚ʻ\033[38;5;228;5m⚡\033[38;5;21;25mʻ‚\033[38;5;228;5m"
-        "⚡\033[38;5;21;25m‚ʻ   \033[0m",
+        (
+            "\033[38;5;21;1m  ‚ʻ\033[38;5;228;5m⚡\033[38;5;21;25mʻ‚\033[38;5;228;5m"
+            "⚡\033[38;5;21;25m‚ʻ   \033[0m"
+        ),
         "\033[38;5;21;1m  ‚ʻ‚ʻ\033[38;5;228;5m⚡\033[38;5;21;25mʻ‚ʻ   \033[0m",
     ]
     table = PrettyTable(["Thunderbolt", "Lightning"])
@@ -564,15 +583,12 @@ class TestMultiPattern:
 def test_colored_table() -> None:
     table = PrettyTable(field_names=["Namespace", "Count"])
     table.title = "\x1b[34mHere be Table caption\x1b[39m"
-    assert (
-        table.get_string()
-        == """+-----------------------+
+    assert table.get_string() == """+-----------------------+
 | \x1b[34mHere be Table caption\x1b[39m |
 +-------------+---------+
 |  Namespace  |  Count  |
 +-------------+---------+
 +-------------+---------+"""
-    )
 
 
 def test_link_and_color() -> None:
@@ -585,9 +601,7 @@ def test_link_and_color() -> None:
     text = "Click \x1b[34mhere\x1b[39m"
     table.add_row([f"\033]8;;https://example.com\033\\{text}\033]8;;\033\\", "3"])
 
-    assert (
-        table.get_string()
-        == """\
+    assert table.get_string() == """\
 +------------+-------+
 |    Link    | Count |
 +------------+-------+
@@ -595,7 +609,6 @@ def test_link_and_color() -> None:
 |  No link   |   2   |
 | \033]8;;https://example.com\033\\Click \x1b[34mhere\x1b[39m\033]8;;\033\\ |   3   |
 +------------+-------+"""
-    )
 
 
 @pytest.mark.parametrize(
@@ -692,3 +705,43 @@ def test_table_alignment_with_emoji(
     with open(os.path.join(DATA_DIR, expected_file), encoding="utf-8") as fin:
         expected_from_file = fin.read()
     assert table.get_string().rstrip() == expected_from_file.strip()
+
+
+def test_ansi_wrap_width():
+    """ANSI escape sequences should not count toward column width when wrapping."""
+    table = PrettyTable(["Key", "Value"])
+    table.header = False
+    table.max_width["Value"] = 35
+    table.add_row(
+        [
+            "NEW_ENVIRON",
+            (
+                "\x1b[38;5;208mOversharing: HOME, PWD, SHELL,"
+                " SSH_AUTH_SOCK, XDG_SESSION_PATH\x1b[0m"
+            ),
+        ]
+    )
+    result = table.get_string()
+    for line in result.split("\n"):
+        if "|" not in line:
+            continue
+        parts = line.split("|")
+        value_cell = parts[2] if len(parts) > 2 else ""
+        assert "\x1b[38;5;208m" not in value_cell or "\x1b[0m" in value_cell
+
+
+def test_ansi_wrap_no_bleed():
+    """Wrapped ANSI-colored text must close SGR on every line."""
+    table = PrettyTable(["Key", "Value"])
+    table.header = False
+    table.max_width["Value"] = 30
+    table.add_row(
+        [
+            "TEST",
+            "\x1b[31mRed text that is long enough to wrap across lines\x1b[0m",
+        ]
+    )
+    result = table.get_string()
+    for line in result.split("\n"):
+        if "\x1b[31m" in line:
+            assert "\x1b[0m" in line
